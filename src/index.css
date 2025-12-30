@@ -1,0 +1,170 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap');
+
+@layer base {
+  :root {
+    --background: 40 20% 97%;
+    --foreground: 200 25% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 200 25% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 200 25% 15%;
+
+    --primary: 172 50% 35%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 40 15% 92%;
+    --secondary-foreground: 200 25% 25%;
+
+    --muted: 40 10% 90%;
+    --muted-foreground: 200 10% 50%;
+
+    --accent: 32 80% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 65% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 40 15% 88%;
+    --input: 40 15% 88%;
+    --ring: 172 50% 35%;
+
+    --radius: 0.75rem;
+
+    /* Custom properties */
+    --shadow-card: 0 4px 20px -4px hsl(200 25% 15% / 0.08);
+    --shadow-card-hover: 0 12px 32px -8px hsl(200 25% 15% / 0.15);
+    --shadow-glow: 0 0 24px hsl(172 50% 35% / 0.2);
+    
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    /* Font families */
+    --font-display: 'Fraunces', serif;
+    --font-body: 'DM Sans', sans-serif;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 200 25% 10%;
+    --foreground: 40 20% 95%;
+
+    --card: 200 20% 14%;
+    --card-foreground: 40 20% 95%;
+
+    --popover: 200 20% 14%;
+    --popover-foreground: 40 20% 95%;
+
+    --primary: 172 50% 45%;
+    --primary-foreground: 200 25% 10%;
+
+    --secondary: 200 15% 20%;
+    --secondary-foreground: 40 20% 90%;
+
+    --muted: 200 15% 18%;
+    --muted-foreground: 40 10% 60%;
+
+    --accent: 32 80% 55%;
+    --accent-foreground: 200 25% 10%;
+
+    --destructive: 0 65% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 200 15% 22%;
+    --input: 200 15% 22%;
+    --ring: 172 50% 45%;
+
+    --shadow-card: 0 4px 20px -4px hsl(0 0% 0% / 0.3);
+    --shadow-card-hover: 0 12px 32px -8px hsl(0 0% 0% / 0.5);
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+}
+
+@layer utilities {
+  .card-shadow {
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-shadow-hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+
+  .transition-spring {
+    transition: var(--transition-spring);
+  }
+
+  .hover-lift {
+    @apply transition-spring;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .hover-glow:hover {
+    box-shadow: var(--shadow-glow);
+  }
+}
+
+@layer components {
+  .task-checkbox {
+    @apply w-5 h-5 rounded-full border-2 border-primary/40 transition-spring cursor-pointer flex items-center justify-center;
+  }
+
+  .task-checkbox:hover {
+    @apply border-primary bg-primary/10 scale-110;
+  }
+
+  .task-checkbox.checked {
+    @apply bg-primary border-primary;
+  }
+
+  .task-item {
+    @apply transition-spring;
+  }
+
+  .task-item:hover {
+    transform: translateX(4px);
+  }
+}
