@@ -24,7 +24,24 @@ const initialTasks: Task[] = [
 ];
 
 const Index = () => {
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [tasks, setTasks] = useState<Task[]>(() => {
+    // Load tasks from localStorage on initial render
+    const savedTasks = localStorage.getItem("tasks");
+    if (savedTasks) {
+      try {
+        const parsed = JSON.parse(savedTasks);
+        // Convert deadline strings back to Date objects
+        return parsed.map((task: any) => ({
+          ...task,
+          deadline: task.deadline ? new Date(task.deadline) : undefined
+        }));
+      } catch (e) {
+        console.error("Failed to parse saved tasks:", e);
+        return initialTasks;
+      }
+    }
+    return initialTasks;
+  });
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const { toast } = useToast();
 
@@ -38,6 +55,11 @@ const Index = () => {
     // Request notification permission
     reminderService.requestNotificationPermission();
   }, []);
+
+  // Save tasks to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
 
   // Start reminder service when email and tasks are available
   useEffect(() => {

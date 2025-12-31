@@ -22,6 +22,10 @@ export class ReminderService {
     // Clear any existing interval
     this.stop();
 
+    console.log('🚀 Reminder service started');
+    console.log('📧 Email configured:', config.email);
+    console.log('📋 Tasks to monitor:', config.tasks.length);
+
     // Start checking for reminders
     this.checkInterval = window.setInterval(() => {
       this.checkReminders(config, onReminder);
@@ -42,13 +46,26 @@ export class ReminderService {
     const now = new Date().getTime();
     const { email, tasks } = config;
 
-    if (!email) return;
+    if (!email) {
+      console.log('⚠️ No email configured, skipping reminder check');
+      return;
+    }
+
+    const tasksWithDeadlines = tasks.filter(t => !t.completed && t.deadline);
+    console.log(`🔍 Checking ${tasksWithDeadlines.length} tasks for reminders...`);
 
     tasks.forEach((task) => {
       if (task.completed || !task.deadline) return;
 
       const deadlineTime = new Date(task.deadline).getTime();
       const timeUntilDeadline = deadlineTime - now;
+      const hoursUntil = Math.floor(timeUntilDeadline / 3600000);
+      const minutesUntil = Math.floor((timeUntilDeadline % 3600000) / 60000);
+
+      // Log each task's status
+      if (timeUntilDeadline > 0) {
+        console.log(`⏰ "${task.text}" - ${hoursUntil}h ${minutesUntil}m until deadline`);
+      }
 
       // Check if task is within reminder threshold and hasn't passed
       if (
@@ -60,9 +77,12 @@ export class ReminderService {
         const alreadySent = localStorage.getItem(reminderKey);
 
         if (!alreadySent) {
+          console.log(`📨 Sending reminder for "${task.text}"`);
           this.sendEmailReminder(email, task);
           localStorage.setItem(reminderKey, "true");
           onReminder(task);
+        } else {
+          console.log(`✅ Reminder already sent for "${task.text}"`);
         }
       }
     });
