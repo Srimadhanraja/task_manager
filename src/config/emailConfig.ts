@@ -4,7 +4,7 @@
 
 export const EMAIL_CONFIG = {
   // You can use this public key for testing, or get your own free key from web3forms.com
-  WEB3FORMS_ACCESS_KEY: '52006c1f-41df-438f-a8f0-116e2d127553', // Get free key from https://web3forms.com
+  WEB3FORMS_ACCESS_KEY: '04ceaba1-a4d0-4f15-b416-352aaa47bdf8', // Get free key from https://web3forms.com
   FROM_NAME: 'Velvet Tasks',
 };
 

@@ -8,7 +8,7 @@ interface Task {
 }
 
 interface ReminderConfig {
-  email: string;
+  emails: string[];
   tasks: Task[];
 }
 
@@ -23,7 +23,7 @@ export class ReminderService {
     this.stop();
 
     console.log('🚀 Reminder service started');
-    console.log('📧 Email configured:', config.email);
+    console.log('📧 Emails configured:', config.emails.length, config.emails);
     console.log('📋 Tasks to monitor:', config.tasks.length);
 
     // Start checking for reminders
@@ -44,10 +44,10 @@ export class ReminderService {
 
   private checkReminders(config: ReminderConfig, onReminder: (task: Task) => void) {
     const now = new Date().getTime();
-    const { email, tasks } = config;
+    const { emails, tasks } = config;
 
-    if (!email) {
-      console.log('⚠️ No email configured, skipping reminder check');
+    if (!emails || emails.length === 0) {
+      console.log('⚠️ No emails configured, skipping reminder check');
       return;
     }
 
@@ -77,8 +77,11 @@ export class ReminderService {
         const alreadySent = localStorage.getItem(reminderKey);
 
         if (!alreadySent) {
-          console.log(`📨 Sending reminder for "${task.text}"`);
-          this.sendEmailReminder(email, task);
+          console.log(`📨 Sending reminder for "${task.text}" to ${emails.length} email(s)`);
+          // Send to all emails
+          emails.forEach(email => {
+            this.sendEmailReminder(email, task);
+          });
           localStorage.setItem(reminderKey, "true");
           onReminder(task);
         } else {
@@ -104,13 +107,16 @@ export class ReminderService {
 
     // Send actual email using Web3Forms
     try {
+      console.log('=== SENDING REMINDER EMAIL ===');
+      console.log('To:', email);
+      console.log('Task:', task.text);
+      
       const formData = new FormData();
       formData.append('access_key', EMAIL_CONFIG.WEB3FORMS_ACCESS_KEY);
+      formData.append('name', EMAIL_CONFIG.FROM_NAME);
+      formData.append('email', email); // Recipient email
       formData.append('subject', `Task Reminder: ${task.text}`);
-      formData.append('from_name', EMAIL_CONFIG.FROM_NAME);
-      formData.append('email', email);
-      formData.append('message', `
-Hello!
+      formData.append('message', `Hello!
 
 This is a reminder about your task:
 
@@ -120,20 +126,20 @@ Deadline: ${new Date(task.deadline!).toLocaleString()}
 Don't forget to complete it on time!
 
 Best regards,
-Velvet Tasks
-      `);
-
+Velvet Tasks`);
+      
       const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         body: formData
       });
 
       const data = await response.json();
+      console.log('Email response:', data);
 
       if (data.success) {
-        console.log('✅ Email reminder sent successfully:', data);
+        console.log('✅ Email reminder sent successfully');
       } else {
-        console.error('❌ Email failed:', data);
+        console.error('❌ Email failed:', data.message);
       }
     } catch (error: any) {
       console.error('❌ Failed to send email reminder:', error);

@@ -42,14 +42,18 @@ const Index = () => {
     }
     return initialTasks;
   });
-  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userEmails, setUserEmails] = useState<string[]>([]);
   const { toast } = useToast();
 
-  // Load email from localStorage
+  // Load emails from localStorage
   useEffect(() => {
-    const savedEmail = localStorage.getItem("userEmail");
-    if (savedEmail) {
-      setUserEmail(savedEmail);
+    const savedEmails = localStorage.getItem("userEmails");
+    if (savedEmails) {
+      try {
+        setUserEmails(JSON.parse(savedEmails));
+      } catch (e) {
+        console.error("Failed to parse saved emails:", e);
+      }
     }
 
     // Request notification permission
@@ -61,11 +65,11 @@ const Index = () => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }, [tasks]);
 
-  // Start reminder service when email and tasks are available
+  // Start reminder service when emails and tasks are available
   useEffect(() => {
-    if (userEmail && tasks.length > 0) {
+    if (userEmails.length > 0 && tasks.length > 0) {
       reminderService.start(
-        { email: userEmail, tasks },
+        { emails: userEmails, tasks },
         (task) => {
           toast({
             title: "Task Reminder",
@@ -76,11 +80,11 @@ const Index = () => {
     }
 
     return () => reminderService.stop();
-  }, [userEmail, tasks, toast]);
+  }, [userEmails, tasks, toast]);
 
-  const handleEmailChange = (email: string) => {
-    setUserEmail(email);
-    localStorage.setItem("userEmail", email);
+  const handleEmailsChange = (emails: string[]) => {
+    setUserEmails(emails);
+    localStorage.setItem("userEmails", JSON.stringify(emails));
   };
 
   const addTask = (text: string, deadline?: Date) => {
@@ -119,7 +123,7 @@ const Index = () => {
           
           {/* Email Settings Button */}
           <div className="mt-4 flex justify-center">
-            <EmailSettings email={userEmail} onEmailChange={handleEmailChange} />
+            <EmailSettings emails={userEmails} onEmailsChange={handleEmailsChange} />
           </div>
         </header>
 
@@ -163,9 +167,9 @@ const Index = () => {
         {/* Footer */}
         <footer className="mt-12 text-center text-sm text-muted-foreground font-body">
           <p>Hover over tasks to reveal actions ✨</p>
-          {userEmail && (
+          {userEmails.length > 0 && (
             <p className="mt-2">
-              Email reminders enabled for: <span className="font-medium">{userEmail}</span>
+              Email reminders enabled for {userEmails.length} email{userEmails.length > 1 ? 's' : ''}
             </p>
           )}
         </footer>
